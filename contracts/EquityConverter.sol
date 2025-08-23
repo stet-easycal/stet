@@ -15,11 +15,10 @@ contract EquityConverter is Ownable, ReentrancyGuard {
     constructor(address _stet, address _owner) Ownable(_owner) {
         require(_stet != address(0), "stet=0");
         stet = ISTET(_stet);
-        minConvert = 100 * (10 ** uint256(stet.decimals()));
     }
 
     function _checks(address caller, uint256 amount) internal view {
-        require(amount >= minConvert, "amount < min");
+        require(amount >= 0, "amount < 0");
         require(!stet.blacklist(caller), "blacklisted");
         if (stet.whitelistEnabled()) require(stet.whitelist(caller), "not whitelisted");
     }

@@ -58,7 +58,7 @@ contract ShengTuoEquityToken is ERC20, ERC20Burnable, ERC20Pausable, Ownable, ER
 
     function _update(address from, address to, uint256 value)
         internal
-        override(ERC20, ERC20Pausable, ERC1363)
+        override(ERC20, ERC20Pausable)
         whenNotPaused
     {
         if (from != address(0)) {

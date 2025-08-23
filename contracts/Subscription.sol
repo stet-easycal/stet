@@ -15,7 +15,6 @@ contract Subscription is Ownable, ReentrancyGuard {
     address public usdc;
 
     uint256 public constant STET_PER_USD = 10;
-    uint256 public constant MIN_USD6     = 100e6;
     uint256 public usdCap6  = 5_000_000e6;
     uint256 public usdRaised6;
 
@@ -52,7 +51,7 @@ contract Subscription is Ownable, ReentrancyGuard {
         uint8 d = IERC20Metadata(stable).decimals();
 
         uint256 usd6 = _to6(payAmount, d);
-        require(usd6 >= MIN_USD6, "below min $100");
+        require(usd6 >= 0, "amount < 0");
         uint256 newRaised = usdRaised6 + usd6;
         require(newRaised <= usdCap6, "cap reached");
         usdRaised6 = newRaised;
