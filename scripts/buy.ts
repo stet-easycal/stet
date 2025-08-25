@@ -1,32 +1,65 @@
-import hre from "hardhat";
+// scripts/subscribe-usdt-bsc.ts
 
-const { ethers } = await hre.network.connect({ network: "bsctest" });
 
-try {
-	const SUB  = "0x6909D5E8F0d0695A512EfBF8270749252F5f7892";
-	const USDT = "0xFB26093Fa0ab84426AFBd672563FB1872B0b8253";
+import { network } from 'hardhat';
+
+async function main() {
+	const { ethers } = await network.connect({
+		network: "bsc"
+	});
+
+	const SUB  = "0xEfd994c510d7eD1f7C0c603EAb7AF3583a92863d";
+	const USDT = "0x55d398326f99059fF775485246999027B3197955";
 
 	const [buyer] = await ethers.getSigners();
-	const erc20 = new ethers.Contract(USDT, [
-		"function approve(address,uint256) returns (bool)",
-		"function allowance(address,address) view returns (uint256)"
-	], buyer);
-	const sub = new ethers.Contract(SUB, [
-		"function subscribe(address token, uint256 amount) external"
-	], buyer);
 
-	const amount6 = ethers.parseUnits("1000", 6);
+	const erc20 = new ethers.Contract(
+			USDT,
+			[
+				"function approve(address,uint256) returns (bool)",
+				"function allowance(address,address) view returns (uint256)",
+				"function balanceOf(address) view returns (uint256)",
+				"function decimals() view returns (uint8)"
+			],
+			buyer
+	);
 
-	const tx1 = await erc20.approve(SUB, amount6);
-	await tx1.wait();
+	const sub = new ethers.Contract(
+			SUB,
+			["function subscribeUSDT(uint256 payAmount) external"],
+			buyer
+	);
 
-	console.log("allowance =", (await erc20.allowance(await buyer.getAddress(), SUB)).toString());
+	const payHuman = "1";
+	const dec = await erc20.decimals();
+	const amount = ethers.parseUnits(payHuman, dec);
 
-	const tx2 = await sub.subscribe(USDT, amount6);
+	const bal = await erc20.balanceOf(await buyer.getAddress());
+	if (bal < amount) {
+		throw new Error(`余额不足：需要 ${payHuman} USDT，当前余额为 ${ethers.formatUnits(bal, dec)} USDT`);
+	}
+
+	const current = await erc20.allowance(await buyer.getAddress(), SUB);
+	if (current < amount) {
+		const tx1 = await erc20.approve(SUB, amount);
+		console.log("approve tx =", tx1.hash);
+		await tx1.wait();
+	}
+
+	console.log(
+			"allowance =",
+			(await erc20.allowance(await buyer.getAddress(), SUB)).toString()
+	);
+
+	const tx2 = await sub.subscribeUSDT(amount);
+	console.log("subscribeUSDT tx =", tx2.hash);
 	await tx2.wait();
 	console.log("✓ subscribed");
-} catch (e: any) {
+}
+
+main().catch((e: any) => {
 	console.log("short:", e.shortMessage);
 	console.log("reason:", e.reason);
-	console.log("raw:", e.data);
-}
+	console.log("raw:", e.data ?? e);
+	process.exit(1);
+});

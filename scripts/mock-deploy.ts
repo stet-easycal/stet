@@ -10,12 +10,12 @@ async function main() {
 
 
 	const MockToken = await ethers.getContractFactory("MockToken");
-	const usdt = await MockToken.deploy("Mock USDT", "USDT");
+	const usdt = await MockToken.deploy("USDT", "USDT");
 	await usdt.waitForDeployment();
 
 	console.log(`✓ Deployed USDT at ${usdt.target}`);
 
-	const usdc = await MockToken.deploy("Mock USDC", "USDC");
+	const usdc = await MockToken.deploy("USDC", "USDC");
 	await usdc.waitForDeployment();
 
 	console.log(`✓ Deployed USDC at ${usdc.target}`);

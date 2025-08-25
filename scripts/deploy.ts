@@ -2,7 +2,7 @@ import { network } from "hardhat";
 
 async function main() {
 	const { ethers } = await network.connect({
-		network: "bsctest"
+		network: "bsc"
 	});
 
 	const [deployer] = await ethers.getSigners();
@@ -11,8 +11,8 @@ async function main() {
 	const recipient     = deployer.address;
 	const initialOwner  = deployer.address;
 	const treasury      = deployer.address;
-	const USDT_ADDRESS  = "0xFB26093Fa0ab84426AFBd672563FB1872B0b8253";
-	const USDC_ADDRESS  = "0x377Be66e77484f0046A29B73880965D886A50AA8";
+	const USDT_ADDRESS  = "0x55d398326f99059fF775485246999027B3197955";
+	const USDC_ADDRESS  = "0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d";
 
 	const STET = await ethers.getContractFactory("ShengTuoEquityToken");
 	const stet = await STET.deploy(recipient, initialOwner);

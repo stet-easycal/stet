@@ -22,12 +22,22 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
+		hardhat: {
+			type: "edr-simulated",
+			chainId: 31337,
+		},
 	  bsctest: {
 			type: "http",
 		  url: process.env.BSC_TESTNET_RPC!,
 		  accounts: process.env.PRIVATE_KEY2 ? [process.env.PRIVATE_KEY2] : [],
 		  chainId: 97,
 	  },
+		bsc: {
+			type: "http",
+			url: process.env.BSC_MAINNET_RPC!,
+			accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+			chainId: 56,
+		},
   },
 };
 

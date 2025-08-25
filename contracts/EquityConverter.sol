@@ -8,7 +8,6 @@ import "./interfaces/ISTET.sol";
 
 contract EquityConverter is Ownable, ReentrancyGuard {
     ISTET public immutable stet;
-    uint256 public immutable minConvert;
 
     event Converted(address indexed user, uint256 amount, bytes32 indexed hash, uint256 timestamp);
 
@@ -18,7 +17,7 @@ contract EquityConverter is Ownable, ReentrancyGuard {
     }
 
     function _checks(address caller, uint256 amount) internal view {
-        require(amount >= 0, "amount < 0");
+        require(amount > 0, "zero amount");
         require(!stet.blacklist(caller), "blacklisted");
         if (stet.whitelistEnabled()) require(stet.whitelist(caller), "not whitelisted");
     }
@@ -40,4 +39,6 @@ contract EquityConverter is Ownable, ReentrancyGuard {
         stet.burnFrom(msg.sender, amount);
         emit Converted(msg.sender, amount, hash, block.timestamp);
     }
+
+    receive() external payable { revert("no native"); }
 }
